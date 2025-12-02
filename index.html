@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Esports Calendar</title>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+  <header class="header">
+    <h1>Esports Calendar</h1>
+    <div class="sub">여러 e스포츠 대회의 일정과 결과를 한눈에</div>
+    <nav class="nav">
+      <a class="button" href="pages/lol.html">리그 오브 레전드</a>
+      <a class="button" href="pages/valorant.html">발로란트</a>
+      <a class="button" href="pages/overwatch.html">오버워치</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <div class="grid">
+      <section class="card">
+        <div class="card-header">
+          <div>캘린더</div>
+          <div class="filter">
+            <label><input type="checkbox" name="game-filter" value="lol" checked /> <span class="badge lol">LoL</span></label>
+            <label><input type="checkbox" name="game-filter" value="val" checked /> <span class="badge val">VAL</span></label>
+            <label><input type="checkbox" name="game-filter" value="ow" checked /> <span class="badge ow">OW</span></label>
+          </div>
+        </div>
+        <div class="card-body" id="calendar"></div>
+      </section>
+
+      <aside class="card">
+        <div class="card-header"><div>오늘 경기</div></div>
+        <div class="card-body" id="today-matches"></div>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="footer">© 2025 Esports Calendar</footer>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

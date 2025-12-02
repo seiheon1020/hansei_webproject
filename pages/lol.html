@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LoL — Esports Calendar</title>
+  <link rel="stylesheet" href="../assets/css/styles.css" />
+</head>
+<body data-game="lol">
+  <header class="header">
+    <h1>리그 오브 레전드</h1>
+    <div class="sub">대회 일정과 결과</div>
+    <nav class="nav">
+      <a class="button" href="../index.html">메인 페이지</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <div class="page-two-col">
+      <section class="card">
+        <div class="card-header"><div>과거 및 미래 대회 일정</div><span class="badge lol">LoL</span></div>
+        <div class="card-body" id="game-events"></div>
+      </section>
+      <section class="card">
+        <div class="card-header"><div>현재 진행중 대회 및 결과</div></div>
+        <div class="card-body" id="current-tournaments"></div>
+        <div class="card-body format">
+          <strong>대회 진행 방식</strong><br />
+          - 정규 시즌 → 플레이오프 → 국제대회(예: MSI, Worlds)<br />
+          - 더블 라운드 로빈, Bo3/Bo5 경기 형식을 사용
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer">© 2025 Esports Calendar</footer>
+
+  <script src="../assets/js/data.js"></script>
+  <script src="../assets/js/main.js"></script>
+</body>
+</html>

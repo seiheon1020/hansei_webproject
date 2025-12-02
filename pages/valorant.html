@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Valorant — Esports Calendar</title>
+  <link rel="stylesheet" href="../assets/css/styles.css" />
+</head>
+<body data-game="val">
+  <header class="header">
+    <h1>발로란트</h1>
+    <div class="sub">대회 일정과 결과</div>
+    <nav class="nav">
+      <a class="button" href="../index.html">메인 페이지</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <div class="page-two-col">
+      <section class="card">
+        <div class="card-header"><div>과거 및 미래 대회 일정</div><span class="badge val">VAL</span></div>
+        <div class="card-body" id="game-events"></div>
+      </section>
+      <section class="card">
+        <div class="card-header"><div>현재 진행중 대회 및 결과</div></div>
+        <div class="card-body" id="current-tournaments"></div>
+        <div class="card-body format">
+          <strong>대회 진행 방식</strong><br />
+          - 인터내셔널 리그 → 마스터스 → 챔피언스<br />
+          - 그룹 스테이지 + 싱글/더블 엘리미네이션 토너먼트
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer">© 2025 Esports Calendar</footer>
+
+  <script src="../assets/js/data.js"></script>
+  <script src="../assets/js/main.js"></script>
+</body>
+</html>
