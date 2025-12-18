@@ -16,14 +16,57 @@ function eventsInDay(day, events) {
   return events.filter(e => ds >= e.startDate && ds <= e.endDate);
 }
 
-function renderCalendar(targetId, events, filterGames) {
+function renderCalendar(targetId, events, filterGames, state) {
   const container = document.getElementById(targetId);
   if (!container) return;
-  const now = new Date();
-  const { days } = getMonthDays(now.getFullYear(), now.getMonth());
+  const today = new Date();
+  const curYear = state?.year ?? today.getFullYear();
+  const curMonth = state?.month ?? today.getMonth();
+  // Bounds: only this year and next year
+  const baseYear = new Date().getFullYear();
+  const minYear = baseYear, minMonth = 0; // Jan of this year
+  const maxYear = baseYear + 1, maxMonth = 11; // Dec of next year
+  const { first, last, days } = getMonthDays(curYear, curMonth);
   const filtered = filterGames && filterGames.size ? events.filter(e => filterGames.has(e.game)) : events;
 
-  const weekdayNames = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  // Header: month label + navigation
+  const monthBar = document.createElement('div');
+  monthBar.className = 'monthbar';
+  monthBar.setAttribute('aria-live', 'polite');
+
+  const nav = document.createElement('div');
+  nav.className = 'monthnav';
+  const prevBtn = document.createElement('button');
+  prevBtn.className = 'nav-btn';
+  prevBtn.type = 'button';
+  prevBtn.setAttribute('aria-label', '이전 달');
+  prevBtn.textContent = '‹';
+
+  const todayBtn = document.createElement('button');
+  todayBtn.className = 'nav-btn';
+  todayBtn.type = 'button';
+  todayBtn.setAttribute('aria-label', '오늘로 이동');
+  todayBtn.textContent = '오늘';
+
+  const nextBtn = document.createElement('button');
+  nextBtn.className = 'nav-btn';
+  nextBtn.type = 'button';
+  nextBtn.setAttribute('aria-label', '다음 달');
+  nextBtn.textContent = '›';
+
+  nav.appendChild(prevBtn);
+  nav.appendChild(todayBtn);
+  nav.appendChild(nextBtn);
+
+  const label = document.createElement('div');
+  label.className = 'monthlabel';
+  label.textContent = `${curYear}년 ${curMonth + 1}월`;
+
+  // Swap positions: label first (left), nav second (right)
+  monthBar.appendChild(label);
+  monthBar.appendChild(nav);
+
+  const weekdayNames = ["일","월","화","수","목","금","토"];
   const weekdayRow = document.createElement('div');
   weekdayRow.className = 'weekday';
   weekdayNames.forEach(w => {
@@ -34,9 +77,25 @@ function renderCalendar(targetId, events, filterGames) {
   grid.className = 'calendar';
   grid.appendChild(weekdayRow);
 
+  // Leading blanks for alignment (Sun=0 ... Sat=6)
+  for (let i = 0; i < first.getDay(); i++) {
+    const blank = document.createElement('div');
+    blank.className = 'day blank';
+    grid.appendChild(blank);
+  }
+
   days.forEach(day => {
     const dayEl = document.createElement('div'); dayEl.className = 'day';
     const dateEl = document.createElement('div'); dateEl.className = 'date'; dateEl.textContent = day.getDate();
+    // Highlight today
+    if (
+      day.getFullYear() === today.getFullYear() &&
+      day.getMonth() === today.getMonth() &&
+      day.getDate() === today.getDate()
+    ) {
+      dayEl.classList.add('today');
+      dateEl.setAttribute('aria-label', '오늘');
+    }
     dayEl.appendChild(dateEl);
 
     const dayEvents = eventsInDay(day, filtered);
@@ -50,7 +109,56 @@ function renderCalendar(targetId, events, filterGames) {
   });
 
   container.innerHTML = '';
+  container.appendChild(monthBar);
   container.appendChild(grid);
+
+  // Wire up navigation actions
+  if (state) {
+    // Helper to check bounds
+    const lt = (ya, ma, yb, mb) => (ya < yb) || (ya === yb && ma < mb);
+    const gt = (ya, ma, yb, mb) => (ya > yb) || (ya === yb && ma > mb);
+
+    const isAtMin = (state.year === minYear && state.month === minMonth) || lt(state.year, state.month, minYear, minMonth);
+    const isAtMax = (state.year === maxYear && state.month === maxMonth) || gt(state.year, state.month, maxYear, maxMonth);
+
+    const setDisabled = () => {
+      prevBtn.disabled = isAtMin;
+      nextBtn.disabled = isAtMax;
+      prevBtn.setAttribute('aria-disabled', String(prevBtn.disabled));
+      nextBtn.setAttribute('aria-disabled', String(nextBtn.disabled));
+    };
+    setDisabled();
+
+    prevBtn.addEventListener('click', () => {
+      const m = state.month - 1;
+      state.month = (m + 12) % 12;
+      state.year = m < 0 ? state.year - 1 : state.year;
+      // Prevent moving before min
+      if (lt(state.year, state.month, minYear, minMonth)) {
+        state.year = minYear; state.month = minMonth;
+      }
+      renderCalendar(targetId, events, filterGames, state);
+    });
+    nextBtn.addEventListener('click', () => {
+      const m = state.month + 1;
+      state.month = m % 12;
+      state.year = m > 11 ? state.year + 1 : state.year;
+      // Prevent moving after max
+      if (gt(state.year, state.month, maxYear, maxMonth)) {
+        state.year = maxYear; state.month = maxMonth;
+      }
+      renderCalendar(targetId, events, filterGames, state);
+    });
+    todayBtn.addEventListener('click', () => {
+      const n = new Date();
+      state.year = n.getFullYear();
+      state.month = n.getMonth();
+      // Clamp to bounds just in case
+      if (lt(state.year, state.month, minYear, minMonth)) { state.year = minYear; state.month = minMonth; }
+      if (gt(state.year, state.month, maxYear, maxMonth)) { state.year = maxYear; state.month = maxMonth; }
+      renderCalendar(targetId, events, filterGames, state);
+    });
+  }
 }
 
 function renderTodayMatches(targetId, matches, filterGames) {
@@ -78,16 +186,18 @@ function renderTodayMatches(targetId, matches, filterGames) {
 
 function setupMainPage() {
   const filterSet = new Set();
+  const now = new Date();
+  const calState = { year: now.getFullYear(), month: now.getMonth() };
   const checkboxes = document.querySelectorAll('input[name="game-filter"]');
   checkboxes.forEach(cb => {
     cb.addEventListener('change', () => {
       filterSet.clear();
       document.querySelectorAll('input[name="game-filter"]:checked').forEach(el => filterSet.add(el.value));
-      renderCalendar('calendar', EVENTS, filterSet);
+      renderCalendar('calendar', EVENTS, filterSet, calState);
       renderTodayMatches('today-matches', MATCHES, filterSet);
     });
   });
-  renderCalendar('calendar', EVENTS, filterSet);
+  renderCalendar('calendar', EVENTS, filterSet, calState);
   renderTodayMatches('today-matches', MATCHES, filterSet);
 }
 

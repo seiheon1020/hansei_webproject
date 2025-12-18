@@ -60,6 +60,13 @@ body {
   background: linear-gradient(90deg, transparent, rgba(0,0,0,.06), transparent);
 }
 .header h1 { margin: 0 0 8px; font-size: 36px; letter-spacing: -0.01em; }
+.header h1.brand { display: flex; justify-content: center; }
+.brand-logo { display: inline-block; height: 48px; width: auto; object-fit: contain; }
+[data-game] .brand-logo { height: 96px; }
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 1px, 1px);
+  white-space: nowrap; border: 0;
+}
 .header .sub { color: var(--muted); font-size: 15px; }
 .header .nav { justify-content: center; }
 @media (max-width: 768px) {
@@ -130,6 +137,8 @@ body {
   box-shadow: inset 0 -1px 0 rgba(15,23,42,0.02);
   transition: transform .16s ease, box-shadow .16s ease, background-color .16s ease;
 }
+.calendar .day.blank { background: transparent; border-style: dashed; opacity: .6; }
+.calendar .day.today { outline: 2px solid color-mix(in oklab, var(--accent) 60%, white); outline-offset: 2px; background: color-mix(in oklab, var(--accent) 6%, #ffffff); }
 .calendar .day:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(15,23,42,0.06); }
 .calendar .day .date { font-size: 12px; color: var(--muted); }
 .calendar .event { margin-top: 6px; font-size: 12px; padding: 8px; border-radius: 10px; border: 1px dashed #dbe4f0; background: #fff; box-shadow: 0 1px 0 rgba(15,23,42,0.03); transition: transform .16s ease; }
@@ -137,6 +146,22 @@ body {
 .calendar .event.lol { border-color: color-mix(in oklab, var(--lol) 45%, #e5efff); background: color-mix(in oklab, var(--lol) 8%, #ffffff); }
 .calendar .event.val { border-color: color-mix(in oklab, var(--val) 45%, #eafff1); background: color-mix(in oklab, var(--val) 8%, #ffffff); }
 .calendar .event.ow  { border-color: color-mix(in oklab, var(--ow)  45%, #fff3d8); background: color-mix(in oklab, var(--ow)  10%, #ffffff); }
+
+/* Month bar */
+.monthbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.monthlabel { font-weight: 700; letter-spacing: -0.01em; color: var(--text); }
+.monthnav { display: inline-flex; gap: 8px; }
+.nav-btn {
+  appearance: none; border: 1px solid var(--border); background: #ffffff; color: var(--text);
+  padding: 6px 10px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer;
+  transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease, background-color .16s ease;
+  box-shadow: 0 2px 0 rgba(15,23,42,0.02);
+}
+.nav-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(15,23,42,0.06); border-color: #dbe4f0; }
+.nav-btn:active { transform: translateY(0); box-shadow: 0 2px 8px rgba(15,23,42,0.06) inset; }
+.nav-btn:focus-visible { outline: 3px solid color-mix(in oklab, var(--accent) 35%, white); outline-offset: 2px; }
+.nav-btn[disabled] { opacity: .45; cursor: default; box-shadow: none; }
+.nav-btn[disabled]:hover { transform: none; box-shadow: none; }
 
 /* Lists (today matches, events) */
 .list { display: grid; gap: 12px; }

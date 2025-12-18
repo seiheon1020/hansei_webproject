@@ -59,3 +59,92 @@
 - 애니메이션: prefers-reduced-motion 대응(애니메이션 비활성)
 - 대비/접근성: 텍스트 대비, 키보드 탭 이동 경로, 스크린리더 친화적 구조 유지
 - 반응형 QA: 375px~430px 모바일, 768px 태블릿, >=1200px 데스크탑에서 깨짐 없음
+
+---
+
+## 2025-12-19 작업 로그 및 계획
+
+### 달력 자동 생성 개선 (현재 달 기준, 오늘 강조)
+- 구현: 메인 달력이 사용자의 로컬 시간 기준으로 현재 달을 자동 렌더링하도록 보강했고, 오늘 날짜를 강조 표시함.
+- 파일 변경
+  - [assets/js/main.js](assets/js/main.js#L1-L999):
+    - 달 상단에 `YYYY년 M월` 표시하는 `monthbar` 추가
+    - 요일 표기를 한글(`일~토`)로 현지화
+    - 달력 시작 요일 정렬을 위해 선행 공백 셀(`.day.blank`) 삽입
+    - 오늘 날짜 셀에 `.today` 클래스 부여 및 스크린리더용 `aria-label` 추가
+  - [assets/css/styles.css](assets/css/styles.css#L1-L999):
+    - `.day.blank`, `.day.today` 스타일 추가
+    - `.monthbar` 스타일 추가
+- 수동 조작 없이 페이지 로드시 2025년 12월 기준 달력을 생성하고 19일을 강조함.
+
+### 남은 작업
+- 월 이동(이전/다음 달) 내비게이션 버튼 추가 여부 결정 및 구현
+### 2025-12-19 업데이트: 월 내비게이션 추가
+- 기능: 이전/다음/오늘 버튼으로 월 전환, 필터 변경 시 현재 표시 중인 월 유지
+- 파일 변경
+  - [assets/js/main.js](assets/js/main.js#L1-L999): `renderCalendar()`가 `state(year, month)`를 받아 해당 월 렌더, 버튼 이벤트로 상태 갱신 후 재렌더
+  - [assets/css/styles.css](assets/css/styles.css#L1-L999): `.monthbar`, `.monthlabel`, `.monthnav`, `.nav-btn` 스타일 추가/조정
+- 접근성: 버튼에 `aria-label` 부여, 월 라벨 영역 `aria-live` 유지
+- 확인 포인트: 오늘 버튼 클릭 시 현재 달로 복귀, 오늘 날짜 강조 표시 정상 동작
+
+### 2025-12-19 업데이트: 표시 범위와 UI 정렬 변경
+### 2025-12-19 업데이트: 게임 페이지 헤더 로고 적용
+- 2025-12-19 업데이트: 게임 페이지 히어로 로고 강조
+  - 요구사항: 히어로 섹션에서 "대회 일정과 결과" 문구 제거, 로고 크게 노출
+  - 파일 변경: [pages/lol.html](pages/lol.html), [pages/valorant.html](pages/valorant.html), [pages/overwatch.html](pages/overwatch.html) — 헤더의 보조 문구 제거
+  - 스타일 변경: [assets/css/styles.css](assets/css/styles.css) — `[data-game] .brand-logo { height: 96px; }`로 게임 페이지 로고 확대
+- 요구사항: 각 게임 페이지에서 게임 이름 텍스트 대신 해당 게임 로고 표시
+- 구현: 자체 제작 SVG 로고(브랜드 색상 활용, 텍스트 마크) 추가 후 헤더에 이미지로 교체, 접근성을 위해 `alt`와 `sr-only` 텍스트 병행
+- 파일 추가: 
+  - [assets/img/lol.svg](assets/img/lol.svg)
+  - [assets/img/valorant.svg](assets/img/valorant.svg)
+  - [assets/img/overwatch.svg](assets/img/overwatch.svg)
+- 파일 변경:
+  - [pages/lol.html](pages/lol.html): `<h1>`에 로고 이미지 삽입
+  - [pages/valorant.html](pages/valorant.html): `<h1>`에 로고 이미지 삽입
+  - [pages/overwatch.html](pages/overwatch.html): `<h1>`에 로고 이미지 삽입
+  - [assets/css/styles.css](assets/css/styles.css): `.brand-logo`, `.sr-only`, `.header h1.brand` 스타일 추가
+- 비고: 초기에 커스텀 SVG 마크를 사용했으나, 사용자 제공 공식/준공식 로고로 교체함
+- 2025-12-19 업데이트: 사용자 제공 로고로 경로 교체
+  - [pages/lol.html](pages/lol.html): `../images/lol-logo-rendered-hi-res.png`
+  - [pages/valorant.html](pages/valorant.html): `../images/V_Logotype_Red.png`
+  - [pages/overwatch.html](pages/overwatch.html): `../images/overwatch-seeklogo.png`
+  - [assets/css/styles.css](assets/css/styles.css): 래스터 로고 대응을 위해 `.brand-logo { object-fit: contain; }` 추가
+- 범위 제한: 올해 1월 ~ 내년 12월까지만 내비게이션 가능. 경계에서는 이전/다음 버튼 비활성화
+- UI 정렬: 월/년도 라벨을 좌측, 내비게이션 버튼을 우측으로 배치(자리 교체)
+- 파일 변경
+  - [assets/js/main.js](assets/js/main.js#L1-L999): 경계 계산 및 버튼 비활성화 처리, 라벨-버튼 순서 교체
+  - [assets/css/styles.css](assets/css/styles.css#L1-L999): 비활성 버튼 스타일(`.nav-btn[disabled]`) 추가
+- 주 시작 요일(월요일 시작) 옵션 제공 여부 검토
+- 이벤트 툴팁/모달(대회명, 장소, 기간) UX 추가
+- 키보드 내비게이션(←→↑↓로 날짜 이동) 및 포커스 스타일 보강
+
+### 제안: 웹페이지 개선 아이디어
+- 성능
+  - 이미지/폰트 프리로드 및 리소스 힌트(`preconnect`, `preload`)로 FCP 개선
+  - 정적 데이터에 ETag/캐시 헤더 가이드(정적 호스팅 시 설정)
+- UX
+  - 달 전환(이전/다음)과 오늘로 돌아오기 버튼
+  - 이벤트 카테고리 색상 전설(legend) 고정 영역 추가
+  - 날짜 셀 더블클릭 시 해당 날짜 상세로 이동하는 경로 제공
+- 접근성(i18n/a11y)
+  - 다국어 토글(ko/en)과 `lang` 전환 시 요일/날짜 포맷 동기화
+  - 스크린리더용 라이브 영역(달 전환 시 월/연도 읽어주기)
+  - 색상 대비 체크 및 고대비 모드 토글
+- 기능
+  - `.ics` 내보내기(선택 이벤트를 캘린더로 추가)
+  - 타임존 표시(사용자/대회 지역 기준 전환)
+  - 검색/필터 확장(대회명, 지역, 상태)
+- 배포/운영
+  - GitHub Pages 배포 스크립트
+  - 간단한 CI(링트/정적 분석) 추가
+
+### 2025-12-19 업데이트: 푸터 문의 이메일 추가
+- [index.html](index.html) 하단 푸터에 문의 이메일 추가: `문의: seiheon1020@hansei.ac.kr` (mailto 링크 포함)
+- 목적: 사용자가 문의 채널을 쉽게 찾도록 가시성 및 접근성 향상
+
+### 2025-12-19 업데이트: mailto 링크 제거
+- 요청에 따라 푸터의 mailto 링크를 제거하고 순수 텍스트로 표기
+- 변경 파일: [index.html](index.html)
+- 표기: © 2025 Esports Calendar · 문의: seiheon1020@hansei.ac.kr
+
