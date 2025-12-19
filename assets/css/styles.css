@@ -167,8 +167,16 @@ body {
 .list { display: grid; gap: 12px; }
 .list .item { border: 1px solid var(--border); border-radius: 12px; padding: 12px; background: #ffffff; box-shadow: var(--shadow); transition: transform .16s ease, box-shadow .16s ease; }
 .list .item:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(15,23,42,0.08); }
+.list .item.selected { border-color: color-mix(in oklab, var(--accent) 60%, #1f2937); background: color-mix(in oklab, var(--accent) 10%, #ffffff); }
 .item .title { font-weight: 700; letter-spacing: -0.01em; }
 .item .meta { color: var(--muted); font-size: 12px; }
+/* (Removed) Live badge no longer used */
+
+/* Controls & score toggle */
+.controls { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.toggle { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12px; }
+.score { font-weight: 700; margin-left: 6px; }
+.score.blurred { filter: blur(3px); opacity: .85; }
 
 /* Footer */
 .footer { padding: 24px; color: var(--muted); font-size: 12px; text-align: center; }

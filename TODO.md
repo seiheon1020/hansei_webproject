@@ -148,3 +148,43 @@
 - 변경 파일: [index.html](index.html)
 - 표기: © 2025 Esports Calendar · 문의: seiheon1020@hansei.ac.kr
 
+### 2025-12-19 업데이트: 데이터 구조 교체 및 메인 렌더 리팩터링
+- 데이터: [assets/js/data.js](assets/js/data.js)를 `const data = { tournaments: [...] }` 구조로 전면 교체
+- 렌더: [assets/js/main.js](assets/js/main.js)
+  - 캘린더(좌측): 현재 월 기준 날짜별 그룹 리스트로 렌더, 각 대회 항목에 `data-tid` 부여(클릭 가능)
+  - 오늘 경기(우측): `renderRightPanel()`로 대체 — 라이브 우선, 없으면 오늘, 없으면 가까운 미래 대회 경기 표시
+  - 필터: LoL/VAL/OW 체크박스에 따라 좌/우 모두 필터링, 선택된 대회가 필터 아웃되면 선택 해제
+  - 선택: 좌측 대회 클릭 시 우측을 해당 대회 경기로 교체, 좌측 항목 강조(`.selected`)
+- 스타일: [assets/css/styles.css](assets/css/styles.css)에 `.badge.live` 추가
+### 2025-12-19 업데이트: 대회/경기 일정 동작 구현
+- 요구사항:
+  - 좌측 카드: "대회 일정"(과거/현재/미래 포함) 목록
+  - 우측 카드: "경기 일정" 상세(시간, 팀, 스코어, 상태 등)
+  - 기본 화면: 라이브 경기가 있으면 우선 표시, 없으면 최신/현재 대회의 경기 표시
+  - 클릭 시 선택된 대회의 경기 목록으로 우측 갱신, 좌측 항목 선택 강조
+- 구현:
+  - [pages/*.html](pages) — 섹션 제목을 "대회 일정"/"경기 일정"으로 변경, 우측 컨테이너 id를 `game-matches`로 통일
+  - [assets/js/data.js](assets/js/data.js) — `MATCHES`에 `status`(live/completed/upcoming), `score` 필드 추가 및 샘플 데이터 확장(2025-12-19 포함)
+  - [assets/js/main.js](assets/js/main.js) — `renderGamePage(game)` 내 좌측 클릭 핸들러와 기본 표시 로직(라이브 우선, 그 외 현재/기본 대회) 구현
+  - [assets/css/styles.css](assets/css/styles.css) — `.list .item.selected` 스타일로 선택 강조(배경/테두리)
+- 확인 포인트:
+  - 좌측 클릭 시 우측 경기 카드가 해당 대회 경기로 업데이트
+  - 라이브가 있을 때 기본으로 실시간 경기 표시
+  - 선택 강조 스타일 적용 및 접근성/키보드 포커스 경로 문제 없음
+
+### 2025-12-19 업데이트: 메인 페이지 레이아웃 복원 + 캘린더/데이터 동기화
+- 요구사항: 메인 페이지를 초기 모습(텍스트 헤더, 그리드 캘린더)으로 되돌리고, 캘린더 내용이 실제 데이터와 일치하도록 수정
+- 구현 요약:
+  - 캘린더(좌측): 다시 월간 그리드 형태로 렌더. `data.tournaments`의 `startDate~endDate` 범위를 사용해 각 날짜 셀에 해당 대회명을 이벤트로 표시. 게임 필터(lol/val/ow) 적용 유지
+  - 오늘 경기(우측): 금일(`YYYY-MM-DD`)의 경기만 리스트로 표시. 라이브 경기를 상단 정렬, 상태/스코어/단계와 게임 배지 출력
+  - 헤더/히어로: 메인 페이지는 텍스트 제목/부제 형태를 유지(로고 히어로는 각 게임별 페이지 전용)
+- 파일 변경:
+  - [assets/js/main.js](assets/js/main.js):
+    - `renderCalendar()`를 월간 그리드 렌더로 환원(요일 헤더/선행 공백/오늘 강조 포함)
+    - `renderTodayMatches()` 신규 추가 — `data.tournaments`에서 금일 경기를 집계하여 리스트 렌더
+    - `setupMainPage()`에서 좌측/우측 각각 `renderCalendar()`/`renderTodayMatches()` 호출로 연결
+- 확인 포인트:
+  - 필터 토글 시 캘린더와 오늘 경기 모두 선택된 게임만 반영
+  - 현재/다음년도 범위 내에서 월 내비게이션 동작 및 오늘 버튼 정상
+  - 2025-12-19 기준 캘린더와 오늘 경기 패널이 `assets/js/data.js`와 일치
+
